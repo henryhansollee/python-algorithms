@@ -1,70 +1,58 @@
 import sys
 sys.stdin = open('input.txt', 'r')
 
-import sys
-import copy
-sys.setrecursionlimit(100000)
 
-dr = [0, 0, -1, 1]
-dc = [-1, 1, 0, 0]
+def solution(new_id):
+    answer = ''
 
-def turn(l):
-    tmp_a = []
-    for i in range(2 ** l - 1, 2 ** n, 2 ** l):
-        for j in range(0, 2 ** l, 1):
-            tmp_b = []
-            for a in range(j, 2 ** n, 2 ** l):
-                for b in range(i, i - 2 ** l, -1):
-                    tmp_b.append(lists[b][a])
-            tmp_a.append(tmp_b)
-    return tmp_a
+    # 1단계
+    step1_new_id = new_id.lower()
 
-def melt(melt_list):
-    tmp = []
-    for r in range(2 ** n):
-        for c in range(2 ** n):
-            cnt = 0
-            for k in range(4):
-                nr, nc = r + dr[k], c + dc[k]
-                if 0 <= nr < 2 ** n and 0 <= nc < 2 ** n:
-                    if melt_list[nr][nc] > 0:
-                        cnt += 1
-            if cnt < 3 and 0 < melt_list[r][c]:
-                tmp.append([r, c])
-    for rr, cc in tmp:
-        melt_list[rr][cc] -= 1
+    # 2단계
+    step2_new_id = ''
+    for id2 in step1_new_id:
+        # 알파벳 소문자
+        if 97 <= ord(id2) <= 122:
+            step2_new_id += id2
+        # 숫자
+        if id2.isnumeric():
+            step2_new_id += id2
+        # 빼기, 밑줄, 마침표
+        if id2 in ['-', '_', '.']:
+            step2_new_id += id2
 
-def dfs(x, y):
-    global cnt
-    cnt += 1
-    for k in range(4):
-        nx, ny = x + dr[k], y + dc[k]
-        if 0 <= nx < 2 ** n and 0 <= ny < 2 ** n:
-            if lists[nx][ny] > 0:
-                lists[nx][ny] = 0
-                dfs(nx, ny)
+    # 3단계
+    step3_new_id = []
+    for id3 in step2_new_id:
+        if len(step3_new_id) > 0 and id3 == '.':
+            if step3_new_id[-1] == '.':
+                continue
+        step3_new_id.append(id3)
 
-n, q = map(int, input().split())
-lists = [list(map(int, input().split())) for _ in range(2 ** n)]
-l_list = list(map(int, input().split()))
+    # 4단계
+    if step3_new_id[0] == '.':
+        step3_new_id.pop(0)
+    elif step3_new_id[-1] == '.':
+        step3_new_id.pop()
 
-for l in l_list:
-    lists = copy.deepcopy(turn(l))
-    melt(lists)
+    # 5단계
+    if not step3_new_id:
+        step3_new_id.append('a')
 
-ans_a = 0
-for i in range(2 ** n):
-    for j in range(2 ** n):
-        ans_a += lists[i][j]
-print(ans_a)
+    # 6단계
+    step6_new_id = step3_new_id
+    if len(step3_new_id) >= 16:
+        step6_new_id = step3_new_id[:15]
+        if step6_new_id[-1] == '.':
+            step6_new_id.pop()
 
-ans_b = 0
-for i in range(2 ** n):
-    for j in range(2 ** n):
-        cnt = 0
-        if lists[i][j] > 0:
-            lists[i][j] = 0
-            dfs(i, j)
-            if ans_b < cnt:
-                ans_b = cnt
-print(ans_b)
+    # 7단계
+    if len(step6_new_id) <= 2:
+        while len(step6_new_id) != 3:
+            step6_new_id.append(step6_new_id[-1])
+
+    # 출력
+    for id6 in step6_new_id:
+        answer += id6
+
+    return answer
